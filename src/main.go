@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"task-management-be/src/config"
+	"task-management-be/src/controller"
+	"task-management-be/src/repository"
+	"task-management-be/src/services"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -13,14 +16,20 @@ func main() {
 
 	config.DatabaseConnection()
 
+	userRepository := repository.NewUserRepository()
+	userService := services.NewUserService(userRepository, config.DB)
+	userController := controller.NewUserController(userService)
+
 	router := chi.NewRouter()
 
 	router.Get("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("welcome"))
 	})
 
+	router.Post("/users", userController.Create)
+
 	server := http.Server{
-		Addr:    "localhost:3000",
+		Addr:    "localhost:4000",
 		Handler: router,
 	}
 
