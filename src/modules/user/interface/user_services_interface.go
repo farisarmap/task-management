@@ -6,6 +6,10 @@ import (
 	"task-management-be/src/modules/user/model/data/response"
 )
 
-type IUserService interface {
+type ICreateUserService interface {
 	Create(ctx context.Context, req request.UserRequest) response.CreateUserResponse
+}
+
+type IUserService interface {
+	ICreateUserService
 }

@@ -1,18 +1,11 @@
 package services
 
-import (
-	"database/sql"
-	"task-management-be/src/modules/user/repository"
-)
-
 type UserService struct {
-	Repository *repository.UserRepository
-	DB         *sql.DB
+	CreateUserService CreateUserService
 }
 
-func NewUserService(repository *repository.UserRepository, db *sql.DB) *UserService {
+func NewUserService(createUserService CreateUserService) *UserService {
 	return &UserService{
-		Repository: repository,
-		DB:         db,
+		CreateUserService: createUserService,
 	}
 }

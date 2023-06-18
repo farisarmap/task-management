@@ -2,7 +2,6 @@ package wires
 
 import (
 	"task-management-be/src/modules/user/handler"
-	interfaces "task-management-be/src/modules/user/interface"
 	"task-management-be/src/modules/user/repository"
 	services "task-management-be/src/modules/user/service"
 
@@ -10,11 +9,19 @@ import (
 )
 
 var ProviderSet wire.ProviderSet = wire.NewSet(
-	handler.NewUserController,
-	services.NewUserService,
 	repository.NewUserRepository,
-
 	wire.Bind(new(interfaces.IUserController), new(*handler.UserController)),
-	wire.Bind(new(interfaces.IUserService), new(*services.UserService)),
+	services.NewUserService,
+	wire.Bind(new(interfaces.IUserService), new(services.UserService)),
+	services.NewCreateUserService,
+	wire.Bind(new(interfaces.ICreateUserService), new(*services.CreateUserService)),
+	repository.NewUserRepository,
 	wire.Bind(new(interfaces.IUserRepository), new(*repository.UserRepository)),
 )
+
+// func test(db *sql.DB) {
+// 	userRepository := repository.NewUserRepository()
+// 	userCreateService := services.NewCreateUserService(userRepository, db)
+// 	userService := services.NewUserService(userCreateService)
+// 	userHandler := handler.NewUserController(userService)
+// }

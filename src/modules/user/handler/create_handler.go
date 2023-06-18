@@ -18,7 +18,7 @@ func (controller *UserController) Create(writer http.ResponseWriter, req *http.R
 		panic(err)
 	}
 
-	userResponse := controller.Service.Create(req.Context(), requestUser)
+	userResponse := controller.Service.CreateUserService.Create(req.Context(), requestUser)
 
 	response := response.GlobalResponse{
 		Code:   200,
