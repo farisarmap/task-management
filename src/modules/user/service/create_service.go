@@ -2,29 +2,15 @@ package services
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"task-management-be/src/helper"
-	"task-management-be/src/model/data/request"
-	"task-management-be/src/model/data/response"
-	"task-management-be/src/model/entity"
-	"task-management-be/src/repository"
+	"task-management-be/src/modules/user/model/data/request"
+	"task-management-be/src/modules/user/model/data/response"
+	"task-management-be/src/modules/user/model/entity"
 	"time"
 )
 
-type UserService struct {
-	Repository repository.IUserRepository
-	DB         *sql.DB
-}
-
-func NewUserService(repository repository.IUserRepository, db *sql.DB) IUserService {
-	return &UserService{
-		Repository: repository,
-		DB:         db,
-	}
-}
-
-func (service *UserService) CreateUser(ctx context.Context, req request.UserRequest) response.CreateUserResponse {
+func (service *UserService) Create(ctx context.Context, req request.UserRequest) response.CreateUserResponse {
 	var response response.CreateUserResponse
 
 	hashPassword, err := helper.HashPassword(req.Password)

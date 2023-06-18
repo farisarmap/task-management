@@ -1,9 +1,9 @@
-package repository
+package interfaces
 
 import (
 	"context"
 	"database/sql"
-	"task-management-be/src/model/entity"
+	"task-management-be/src/modules/user/model/entity"
 )
 
 type IUserRepository interface {

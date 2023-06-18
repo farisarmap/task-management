@@ -1,23 +1,12 @@
-package controller
+package handler
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"task-management-be/src/model/data/request"
-	"task-management-be/src/model/data/response"
-	"task-management-be/src/services"
+	"task-management-be/src/modules/user/model/data/request"
+	"task-management-be/src/modules/user/model/data/response"
 )
-
-type UserController struct {
-	Service services.IUserService
-}
-
-func NewUserController(service services.IUserService) IUserController {
-	return &UserController{
-		Service: service,
-	}
-}
 
 func (controller *UserController) Create(writer http.ResponseWriter, req *http.Request) {
 	var requestUser request.UserRequest
@@ -29,7 +18,7 @@ func (controller *UserController) Create(writer http.ResponseWriter, req *http.R
 		panic(err)
 	}
 
-	userResponse := controller.Service.CreateUser(req.Context(), requestUser)
+	userResponse := controller.Service.Create(req.Context(), requestUser)
 
 	response := response.GlobalResponse{
 		Code:   200,
