@@ -2,12 +2,15 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
+	"task-management-be/src/helper"
 	"task-management-be/src/modules/user/model/entity"
 )
 
-func (repo *UserRepository) List(ctx context.Context, tx *sql.Tx) []entity.User {
+func (repo *UserRepository) List(ctx context.Context) []entity.User {
+	tx, err := repo.DB.Begin()
+	helper.ErrorNotNil(err, "Failed to start tx db")
+
 	insertQuery := `select * from users`
 	rows, err := tx.QueryContext(ctx, insertQuery)
 	if err != nil {

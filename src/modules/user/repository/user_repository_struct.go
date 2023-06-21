@@ -1,7 +1,13 @@
 package repository
 
-type UserRepository struct{}
+import "database/sql"
 
-func NewUserRepository() *UserRepository {
-	return &UserRepository{}
+type UserRepository struct {
+	DB *sql.DB
+}
+
+func NewUserRepository(db *sql.DB) *UserRepository {
+	return &UserRepository{
+		DB: db,
+	}
 }

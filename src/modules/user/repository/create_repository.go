@@ -2,20 +2,26 @@ package repository
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
+	"task-management-be/src/helper"
 	"task-management-be/src/modules/user/model/entity"
 )
 
-func (repo *UserRepository) Create(ctx context.Context, tx *sql.Tx, user entity.User) entity.User {
-	insertQuery := `insert into users("name", "email", "password", "created_at", "updated_at") values ($1, $2, $3, $4, $5)`
+func (repo *UserRepository) Create(ctx context.Context, user entity.User) entity.User {
+	tx, err := repo.DB.BeginTx(ctx, nil)
+	helper.ErrorNotNil(err, "Failed start tx db")
 
-	_, err := tx.ExecContext(ctx, insertQuery, user.Name, user.Email, user.Password, user.Created_At, user.Updated_At)
+	insertQuery := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)`
+
+	_, err = tx.ExecContext(ctx, insertQuery, user.Name, user.Email, user.Password, user.Created_At, user.Updated_At)
 
 	if err != nil {
-		fmt.Println("error create user:", err)
+		if rbErr := tx.Rollback(); rbErr != nil {
+			helper.Logger.Warn().Msg("Failed to create data transaction")
+			return entity.User{}
+		}
 		return entity.User{}
 	}
+	tx.Commit()
 
 	return user
 }

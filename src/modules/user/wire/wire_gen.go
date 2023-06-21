@@ -9,13 +9,15 @@ package wires
 import (
 	"database/sql"
 	"task-management-be/src/modules/user/handler"
+	"task-management-be/src/modules/user/repository"
 	"task-management-be/src/modules/user/service"
 )
 
 // Injectors from wire.go:
 
-func ProvideUserInjection(db *sql.DB) *handler.UserController {
-	userService := services.NewUserService()
-	userController := handler.NewUserController(userService)
-	return userController
+func ProvideUserInjection(db *sql.DB) *handler.UserHandler {
+	userRepository := repository.NewUserRepository(db)
+	userService := services.NewUserService(userRepository)
+	userHandler := handler.NewUserHandler(userService)
+	return userHandler
 }

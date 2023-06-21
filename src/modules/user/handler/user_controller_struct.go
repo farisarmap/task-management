@@ -4,12 +4,12 @@ import (
 	services "task-management-be/src/modules/user/service"
 )
 
-type UserController struct {
+type UserHandler struct {
 	Service *services.UserService
 }
 
-func NewUserController(service *services.UserService) *UserController {
-	return &UserController{
+func NewUserHandler(service *services.UserService) *UserHandler {
+	return &UserHandler{
 		Service: service,
 	}
 }

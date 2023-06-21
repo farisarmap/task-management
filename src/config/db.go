@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"task-management-be/src/helper"
 
 	_ "github.com/lib/pq"
 )
@@ -28,7 +29,7 @@ func DatabaseConnection() {
 	if err = db.Ping(); err != nil {
 		panic(err)
 	}
-	fmt.Println("Connected to database: ", dbType)
+	helper.Logger.Info().Msg("Connected to db")
 
 	DB = db
 }

@@ -2,6 +2,6 @@ package interfaces
 
 import "net/http"
 
-type IUserController interface {
+type IUserHandler interface {
 	Create(writer http.ResponseWriter, request *http.Request)
 }

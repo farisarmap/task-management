@@ -3,10 +3,10 @@ package entity
 import "time"
 
 type User struct {
-	Id         int
-	Name       string
-	Email      string
-	Password   string
-	Created_At time.Time
-	Updated_At time.Time
+	Id         int       `json:"id"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Password   string    `json:"password"`
+	Created_At time.Time `json:"created_at"`
+	Updated_At time.Time `json:"updated_at"`
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func InitializeUserRoute(router chi.Router, userInjection *handler.UserController) {
+func InitializeUserRoute(router chi.Router, userInjection *handler.UserHandler) {
 	router.Post("/create", userInjection.Create)
+	router.Get("/detail/{id}", userInjection.FindById)
 }

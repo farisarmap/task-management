@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"task-management-be/src/config"
+	"task-management-be/src/helper"
 	"task-management-be/src/routes"
 
 	"github.com/go-chi/chi/v5"
@@ -14,7 +14,9 @@ func main() {
 	err := godotenv.Load()
 	if err != nil {
 	}
-	fmt.Println("Welcome to task management api")
+
+	helper.LoggingFile()
+	helper.Logger.Info().Str("module", "main").Msg("Starting the task management application")
 
 	config.DatabaseConnection()
 
@@ -28,6 +30,6 @@ func main() {
 	}
 
 	if err := server.ListenAndServe(); err != nil {
-		panic(err)
+		// panic(err)
 	}
 }

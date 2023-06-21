@@ -10,7 +10,7 @@ import (
 	"github.com/google/wire"
 )
 
-func ProvideUserInjection(db *sql.DB) *handler.UserController {
+func ProvideUserInjection(db *sql.DB) *handler.UserHandler {
 	wire.Build(ProviderSet)
 	return nil
 }
