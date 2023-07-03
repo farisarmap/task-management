@@ -3,30 +3,35 @@ package repository
 import (
 	"context"
 	"fmt"
+	"task-management-be/src/domain"
 	"task-management-be/src/helper"
-	"task-management-be/src/modules/user/model/entity"
 )
 
-func (repo *UserRepository) List(ctx context.Context) []entity.User {
+func (repo *UserRepository) List(ctx context.Context) ([]domain.User, error) {
 	tx, err := repo.DB.Begin()
-	helper.ErrorNotNil(err, "Failed to start tx db")
+	if err != nil {
+		helper.Logger.Warn().Msg("failed to start tx db")
+		return []domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
+	}
 
 	insertQuery := `select * from users`
 	rows, err := tx.QueryContext(ctx, insertQuery)
 	if err != nil {
-		fmt.Println("fail")
+		helper.Logger.Warn().Msg("failed to start query context")
+		return []domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
 	}
 
-	var users []entity.User
+	var users []domain.User
 
 	for rows.Next() {
-		user := entity.User{}
+		user := domain.User{}
 		err := rows.Scan(&user.Id, &user.Email, &user.Name, &user.Password, &user.Created_At, &user.Updated_At)
 		if err != nil {
-			fmt.Println(err)
+			helper.Logger.Info().Msg("No data user")
+			return []domain.User{}, fmt.Errorf(helper.ErrUserNotFound)
 		}
 
 		users = append(users, user)
 	}
-	return users
+	return users, nil
 }

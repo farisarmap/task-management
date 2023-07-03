@@ -2,13 +2,18 @@ package repository
 
 import (
 	"context"
+	"fmt"
+	"task-management-be/src/domain"
 	"task-management-be/src/helper"
-	"task-management-be/src/modules/user/model/entity"
 )
 
-func (repo *UserRepository) Create(ctx context.Context, user entity.User) entity.User {
+func (repo *UserRepository) Create(ctx context.Context, user domain.User) (domain.User, error) {
 	tx, err := repo.DB.BeginTx(ctx, nil)
-	helper.ErrorNotNil(err, "Failed start tx db")
+
+	if err != nil {
+		helper.Logger.Warn().Msg("failed to start tx db")
+		return domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
+	}
 
 	insertQuery := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)`
 
@@ -17,11 +22,16 @@ func (repo *UserRepository) Create(ctx context.Context, user entity.User) entity
 	if err != nil {
 		if rbErr := tx.Rollback(); rbErr != nil {
 			helper.Logger.Warn().Msg("Failed to create data transaction")
-			return entity.User{}
+			return domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
 		}
-		return entity.User{}
+		return domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
 	}
-	tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		tx.Rollback() // Rollback the transaction if the commit fails
+		helper.Logger.Warn().Msg("Rollback the transaction because commit fails")
+		return domain.User{}, fmt.Errorf(helper.ErrInternalServerError)
+	}
 
-	return user
+	return user, nil
 }

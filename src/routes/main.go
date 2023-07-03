@@ -3,7 +3,7 @@ package routes
 import (
 	"database/sql"
 	"net/http"
-	"task-management-be/src/modules/user/routes"
+	routes "task-management-be/src/modules/user"
 	wires "task-management-be/src/modules/user/wire"
 
 	"github.com/go-chi/chi/v5"
@@ -17,6 +17,7 @@ func InitializeMainRoute(router *chi.Mux, db *sql.DB) {
 	userInjection := wires.ProvideUserInjection(db)
 
 	router.Route("/users", func(r chi.Router) {
+		// routes.InitializeUserRoute(r, userInjection)
 		routes.InitializeUserRoute(r, userInjection)
 	})
 }
