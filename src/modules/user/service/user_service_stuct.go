@@ -1,14 +1,14 @@
 package services
 
 import (
-	"task-management-be/src/modules/user/repository"
+	interfaces "task-management-be/src/modules/user/interface"
 )
 
 type UserService struct {
-	Repository *repository.UserRepository
+	Repository interfaces.IUserRepository
 }
 
-func NewUserService(repository *repository.UserRepository) *UserService {
+func NewUserService(repository interfaces.IUserRepository) *UserService {
 	return &UserService{
 		Repository: repository,
 	}
