@@ -16,6 +16,7 @@ func (h *UserHandler) Create(writer http.ResponseWriter, req *http.Request) {
 	helper.ErrorNotNil(err, "Failed to decode user data")
 
 	userResponse, err := h.Service.Create(req.Context(), requestUser)
+
 	writer.Header().Add("Content-Type", "application/json")
 	encoder := json.NewEncoder(writer)
 

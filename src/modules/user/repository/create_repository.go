@@ -8,7 +8,7 @@ import (
 )
 
 func (repo *UserRepository) Create(ctx context.Context, user domain.User) (domain.User, error) {
-	tx, err := repo.DB.BeginTx(ctx, nil)
+	tx, err := repo.DB.Begin()
 
 	if err != nil {
 		helper.Logger.Warn().Msg("failed to start tx db")

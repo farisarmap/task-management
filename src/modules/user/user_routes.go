@@ -9,7 +9,7 @@ import (
 func InitializeUserRoute(router chi.Router, userInjection *handler.UserHandler) {
 	router.Post("/create", userInjection.Create)
 	router.Get("/detail/{id}", userInjection.FindById)
-	router.Get("/", userInjection.List)
-	router.Delete("/:id", userInjection.Delete)
-	router.Patch("/:id", userInjection.Update)
+	router.Get("/list", userInjection.List)
+	router.Delete("/delete/{id}", userInjection.Delete)
+	router.Patch("/update/{id}", userInjection.Update)
 }

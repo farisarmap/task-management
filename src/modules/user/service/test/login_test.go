@@ -2,6 +2,7 @@ package login_test
 
 import (
 	"context"
+	"fmt"
 	"task-management-be/src/domain"
 	"task-management-be/src/helper"
 	services "task-management-be/src/modules/user/service"
@@ -13,77 +14,81 @@ import (
 )
 
 func TestLogin(t *testing.T) {
-	reqUser := domain.LoginRequest{
-		Email:    "farisarma@gmail.com",
-		Password: "xxxxx",
-	}
+	reqUser := domain.LoginRequest{}
 	ctx := context.TODO()
 
-	t.Run("Negative test case if user not found", func(t *testing.T) {
-		mockRepository := new(MockRepository)
-		// initialize user service using mock
-		s := services.NewUserService(mockRepository)
+	user := domain.User{
+		Id:         1,
+		Name:       "Faris",
+		Email:      "farisarma@gmail.com",
+		Password:   "xxxxx",
+		Created_At: time.Now(),
+		Updated_At: time.Now(),
+	}
 
-		mockRepository.On("FindOne").Return(domain.User{}, helper.NewAppError(helper.ErrUserNotFound))
-		login, err := s.Login(ctx, reqUser)
-
-		expectedErr := helper.NewAppError(helper.ErrUserNotFound)
-
-		assert.Error(t, err)
-		assert.Equal(t, domain.LoginResponse{}, login)
-		assert.Equal(t, expectedErr, err)
-	})
-
-	t.Run("Positive test case", func(t *testing.T) {
-		mockRepository := new(MockRepository)
-		// initialize user service using mock
-		s := services.NewUserService(mockRepository)
-		user := domain.User{
-			Id:         1,
-			Name:       "Faris",
-			Email:      "farisarma@gmail.com",
-			Password:   "xxxxx",
-			Created_At: time.Now(),
-			Updated_At: time.Now(),
-		}
-
-		claims := helper.JwtClaims{
-			RegisteredClaims: jwt.RegisteredClaims{
-				Issuer:    "LOGIN_USER",
-				ExpiresAt: &jwt.NumericDate{time.Now().Add(time.Minute)},
+	testCases := []struct {
+		name         string
+		mockRepoFunc func(repository *MockRepository)
+		expectedUser domain.LoginResponse
+		expectedErr  error
+	}{
+		{
+			name: "Negative test case if user not found",
+			mockRepoFunc: func(repository *MockRepository) {
+				repository.On("FindOne").Return(domain.User{}, helper.NewAppError(helper.ErrUserNotFound))
 			},
-			Email: user.Email,
-			Name:  user.Name,
-		}
-		token, _ := helper.GenerateToken(claims)
+			expectedUser: domain.LoginResponse{},
+			expectedErr:  helper.NewAppError(helper.ErrUserNotFound),
+		},
+		{
+			name: "Positive test case",
+			mockRepoFunc: func(repository *MockRepository) {
+				repository.On("FindOne").Return(user, nil)
+			},
+			expectedUser: GenerateUserResponse(user),
+			expectedErr:  nil,
+		},
+		{
+			name: "Negative test case if transaction db wont start",
+			mockRepoFunc: func(repository *MockRepository) {
+				repository.On("FindOne").Return(domain.User{}, helper.NewAppError(helper.ErrInternalServerError))
+			},
+			expectedUser: domain.LoginResponse{},
+			expectedErr:  helper.NewAppError(helper.ErrInternalServerError),
+		},
+	}
 
-		mockRepository.On("FindOne").Return(user, nil)
-		expectedUser := domain.LoginResponse{
-			Email:       "farisarma@gmail.com",
-			AccessToken: token,
-		}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockRepository := new(MockRepository)
+			s := services.NewUserService(mockRepository)
 
-		login, _ := s.Login(ctx, reqUser)
-		assert.Equal(t, expectedUser, login)
-	})
+			tc.mockRepoFunc(mockRepository)
 
-	t.Run("Negative test case if transaction db wont start", func(t *testing.T) {
-		mockRepository := new(MockRepository)
-		// initialize user service using mock
-		s := services.NewUserService(mockRepository)
+			login, err := s.Login(ctx, reqUser)
+			fmt.Println(err, "<< error")
 
-		expectedErr := helper.NewAppError(helper.ErrInternalServerError)
-		mockRepository.On("FindOne").Return(domain.User{}, expectedErr)
-		login, err := s.Login(ctx, reqUser)
+			assert.Equal(t, tc.expectedUser, login)
+			assert.Equal(t, tc.expectedErr, err)
+		})
+	}
 
-		assert.Error(t, err)
-		assert.Equal(t, domain.LoginResponse{}, login)
-		assert.Equal(t, expectedErr, err)
-	})
+}
 
-	t.Run("Negative test case if failed find data transaction", func(t *testing.T) {
-		// mockRepo := new(MockRepository)
-		// s := services.NewUserService(mockRepo)
+func GenerateUserResponse(user domain.User) domain.LoginResponse {
+	claims := helper.JwtClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    "LOGIN_USER",
+			ExpiresAt: &jwt.NumericDate{time.Now().Add(time.Minute)},
+		},
+		Email: user.Email,
+		Name:  user.Name,
+	}
 
-	})
+	token, _ := helper.GenerateToken(claims)
+	expectedUser := domain.LoginResponse{
+		Email:       "farisarma@gmail.com",
+		AccessToken: token,
+	}
+	return expectedUser
 }

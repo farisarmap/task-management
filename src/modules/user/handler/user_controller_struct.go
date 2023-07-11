@@ -1,14 +1,14 @@
 package handler
 
 import (
-	services "task-management-be/src/modules/user/service"
+	interfaces "task-management-be/src/modules/user/interface"
 )
 
 type UserHandler struct {
-	Service *services.UserService
+	Service interfaces.IUserService
 }
 
-func NewUserHandler(service *services.UserService) *UserHandler {
+func NewUserHandler(service interfaces.IUserService) *UserHandler {
 	return &UserHandler{
 		Service: service,
 	}

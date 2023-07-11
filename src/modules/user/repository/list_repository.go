@@ -25,7 +25,7 @@ func (repo *UserRepository) List(ctx context.Context) ([]domain.User, error) {
 
 	for rows.Next() {
 		user := domain.User{}
-		err := rows.Scan(&user.Id, &user.Email, &user.Name, &user.Password, &user.Created_At, &user.Updated_At)
+		err := rows.Scan(&user.Id, &user.Name, &user.Password, &user.Email, &user.Created_At, &user.Updated_At)
 		if err != nil {
 			helper.Logger.Info().Msg("No data user")
 			return []domain.User{}, fmt.Errorf(helper.ErrUserNotFound)

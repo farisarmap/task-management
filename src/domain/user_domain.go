@@ -18,8 +18,10 @@ type UserRequest struct {
 }
 
 type CreateUserResponse struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name       string    `json:"name"`
+	Email      string    `json:"email"`
+	Created_At time.Time `json:"created_at"`
+	Updated_At time.Time `json:"updated_at"`
 }
 
 type FindByIdUserResponse struct {

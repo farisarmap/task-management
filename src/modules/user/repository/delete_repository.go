@@ -14,7 +14,7 @@ func (repo *UserRepository) Delete(ctx context.Context, id string) error {
 		return fmt.Errorf(helper.ErrInternalServerError)
 	}
 
-	query := `DELETE FROM users WHERE id = ?`
+	query := `DELETE FROM users WHERE id = $1`
 	_, err = tx.ExecContext(ctx, query, id)
 
 	if err != nil {
